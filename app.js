@@ -3,23 +3,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const doodler = document.createElement('div')
     let isGameOver = false 
     let plateformCount = 5 
-    let doodlerLeftSpace = 50
-    let doodlerBottomSpace = 150
     let platforms = []
+    let doodlerLeftSpace = 50
+    let startPoint = 150
+    let doodlerBottomSpace = startPoint
     let upTimerId 
     let downTimerId
-
-    function createDoodler () {
-        grid.appendChild(doodler)
-        doodler.classList.add('doodler')
-        doodlerLeftSpcae = platforms[0].left 
-        doodler.style.left = doodlerLeftSpace + 'px'
-        doodler.style.bottom = doodlerBottomSpace + 'px'
-    }
+    let isJumping = true 
+    let isGoingLeft = false 
+    let isGoingRight = false 
+    let leftTimerId 
+    let rightTimerId 
+    
     class Platform {
         constructor(newPlatBottom) {
-            this.bottom = newPlatBottom
             this.left = Math.random() * 315
+            this.bottom = newPlatBottom
             this.visual = document.createElement('div')
 
             const visual = this.visual 
@@ -46,25 +45,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 visual.style.bottom = platform.bottom + 'px'
             })
         }
+    } 
+    function createDoodler () {
+        grid.appendChild(doodler)
+        doodler.classList.add('doodler')
+        doodlerLeftSpace = platforms[0].left 
+        doodler.style.left = doodlerLeftSpace + 'px'
+        doodler.style.bottom = doodlerBottomSpace + 'px'
     }
     function jump() {
         clearInterval(downTimerId)
+        isJumping = true 
         upTimerId = setInterval(function () {
             doodlerBottomSpace += 20
             doodler.style.bottom = doodlerBottomSpace + 'px'
-            if (doodlerBottomSpace > 350) {
+            if (doodlerBottomSpace > startPoint + 200) {
                 fall()
             }
         },30)
     }
     function fall() {
         clearInterval(upTimerId)
+        isJumping = false 
         downTimerId = setInterval(function () {
             doodlerBottomSpace -= 5
             doodler.style.bottom = doodlerBottomSpace + 'px'
             if (doodlerBottomSpace <= 0) {
                 gameOver() 
             }
+            platforms.forEach(platform => {
+                if (
+                    (doodlerBottomSpace >= platform.bottom) && 
+                    (doodlerBottomSpace <= platform.bottom + 15) && 
+                    ((doodlerLeftSpace + 60) >= platform.left) && 
+                    (doodlerLeftSpace <= (platform.left + 85)) && 
+                    !isJumping
+                ) {console.log('landed')
+                startPoint = doodlerBottomSpace
+            jump() }
+            })
         },30)
 
     }
@@ -75,22 +94,56 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(downTimerId)
 
     }
-
-    function control() {
+    function moveStraight() {
+        isGoingRight = false 
+        isGoingLeft = false
+        clearInterval(rightTimerId)
+        clearInterval(leftTimerId)
+    }
+    function moveLeft() {
+        if (isGoingRight) {
+            clearInterval(rightTimerId)
+            isGoingRight = false 
+        }
+        isGoingLeft = true 
+        leftTimerId = setInterval(function () {
+            if (doodlerLeftSpace >= 0) {
+                doodlerLeftSpace -=15
+                doodler.style.left = doodlerLeftSpace + 'px'
+            }           
+        },30)
+    }
+    function moveRight() {
+        if (isGoingLeft) {
+            clearInterval(leftTimerId)
+            isGoingLeft = false 
+        }
+        isGoingRight = true 
+        rightTimerId = setInterval(function () {
+            if (doodlerLeftSpace <= 340) {
+                doodlerLeftSpace += 15
+                doodler.style.left = doodlerLeftSpace + 'px'
+            } else moveLeft()
+        },30)
+    }
+    function control(e) {
         if (e.key === "ArrowLeft") {
-            //move left
+            moveLeft()
         } else if (e.key === "ArrowRight") {
-            //move right
+            moveRight()
         } else if (e.key === "ArrowUp") {
-            //moveStraight 
+            moveStraight() 
         }
     }
+
+
     function start() {
         if (isGameOver == false) {
             createPlatforms()
             createDoodler()
             setInterval(movePlatforms, 30)
             jump()
+            document.addEventListener('keyup', control)
         }
     }
     //attach a button 
