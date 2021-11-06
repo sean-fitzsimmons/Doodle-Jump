@@ -1,14 +1,18 @@
 .grid {
     width: 400px; 
     height: 600px; 
-    background-color: yellow;
+    background-image: url('https://raw.githubusercontent.com/kubowania/Doodle-Jump/master/background.png');
     position: relative;
+    margin-left: auto;
+    margin-right: auto; 
+    margin-top:3%; 
 }
 
 .doodler { 
-    width: 60px;
+    width: 86px;
     height: 85px; 
-    background-color: red;
+    background-image: url('https://raw.githubusercontent.com/kubowania/Doodle-Jump/master/doodler-guy.png');
+    
     position: absolute; 
 
 
@@ -17,6 +21,7 @@
 .platform {
     width: 85px; 
     height: 15px; 
-    background-color: green;
+    background-image: url('https://raw.githubusercontent.com/kubowania/Doodle-Jump/master/platform.png');
+
     position: absolute;
 }

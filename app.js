@@ -2,11 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const grid = document.querySelector('.grid')
     const doodler = document.createElement('div')
     let isGameOver = false 
+    let speed = 3
     let plateformCount = 5 
     let platforms = []
     let doodlerLeftSpace = 50
     let startPoint = 150
     let doodlerBottomSpace = startPoint
+    const gravity = 0.9
     let upTimerId 
     let downTimerId
     let isJumping = true 
@@ -49,9 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     let firstPlatform = platforms[0].visual 
                     firstPlatform.classList.remove('platform')
                     platforms.shift()
+                    score++
                     let newPlatform = new Platform(600)
                     platforms.push(newPlatform)
-                    score++
+                   
                 }
             })
         }
@@ -71,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             doodler.style.bottom = doodlerBottomSpace + 'px'
             if (doodlerBottomSpace > startPoint + 200) {
                 fall()
+                isJumping = false 
             }
         },30)
     }
@@ -92,7 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     !isJumping
                 ) {console.log('landed')
                 startPoint = doodlerBottomSpace
-            jump() }
+            jump() 
+        isJumping = true }
             })
         },30)
 
@@ -124,10 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
         isGoingLeft = true 
         leftTimerId = setInterval(function () {
             if (doodlerLeftSpace >= 0) {
-                doodlerLeftSpace -=15
+                doodlerLeftSpace -=5
                 doodler.style.left = doodlerLeftSpace + 'px'
-            }           
-        },30)
+            } else moveRight()          
+        },20)
     }
     function moveRight() {
         if (isGoingLeft) {
@@ -136,11 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         isGoingRight = true 
         rightTimerId = setInterval(function () {
-            if (doodlerLeftSpace <= 340) {
-                doodlerLeftSpace += 15
+            if (doodlerLeftSpace <= 313) {
+                doodlerLeftSpace += 5
                 doodler.style.left = doodlerLeftSpace + 'px'
             } else moveLeft()
-        },30)
+        },20)
     }
     function control(e) {
         if (e.key === "ArrowLeft") {
